@@ -8,4 +8,6 @@ public interface Model {
 	public Item getItem(DIRECTION direction);
 	public void movePlayer(DIRECTION direction);
 	public Player getPlayer();
+	public boolean playerCanMove();
+	public boolean isMapFinised();
 }

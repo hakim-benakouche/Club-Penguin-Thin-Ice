@@ -3,7 +3,7 @@ package models.impl;
 import models.Item;
 
 public class Path implements Item {
-	// pv 0 : la glace est cassï¿½e
+	// pv 0 : la glace est cassée
 	// pv 1 : on peut marcher encore une fois sur la galce 
 	// ect
 	private int pv;
@@ -14,6 +14,10 @@ public class Path implements Item {
 		this.pv = pv; 
 	}
 	
+	public int getPV() {
+		return this.pv;
+	}
+	
 	@Override
 	public boolean isReacheable() {
 		return this.pv > 0;
@@ -22,7 +26,7 @@ public class Path implements Item {
 	@Override
 	public char getChar() {
 		if (this.pv == 0) 
-			return 'O'; 
+			return 'O';
 		else if (this.pv == 1)
 			return 'x';
 		else

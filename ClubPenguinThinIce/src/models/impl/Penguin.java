@@ -66,4 +66,8 @@ public class Penguin implements Item, Player {
 	public void addPosColumn(int offsetPosColumn) {
 		this.posColumn += offsetPosColumn;
 	}
+
+
+
+
 }
