@@ -20,23 +20,41 @@ public class Map implements Model {
 	private Item behindPlayer=null;
 	private ArrayList<Path> paths;
 	
-	public Map() {
+	
+	public Map(int mapId) {
 		//					ligne		colonne
 		this.map = new Item[Map.HEIGHT][Map.WIDTH]; 
 		this.player = new Penguin(Map.HEIGHT -4, 2);
 		this.paths = new ArrayList<Path>();
-/*		try {
+		
+		String ressources = "/ressources/";
+		
+		switch (mapId) {
+		
+		case 0 :
+			ressources+="map0.txt";
+			break;
+		case 1 :
+			ressources+="map1.txt";
+			break;
+		case 2: 
+			ressources+="map2.txt";
+			break;
+		}
+		
+		try {
 			this.player = MapFromFile.generateMapFromFile(this.map, 
-					this.getClass().getResource("/ressources/map2.txt").toURI(),
+					this.getClass().getResource(ressources).toURI(),
 					this.paths);
 			this.behindPlayer = new Path(1);
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 			System.exit(0);
 		}
-		*/
-		this.generateEmptyMap();
-		this.generate_map(0);
+		
+		
+		//this.generateEmptyMap();
+		//this.generate_map(mapId);
 	}
 	
 	
@@ -50,10 +68,43 @@ public class Map implements Model {
 	}
 	
 	private void generate_map(int mapId) {
-		if ( mapId < 0 || mapId > 0) 
+		if (mapId < 0) 
 			throw new IllegalArgumentException("Map Id NYI");
 		
 		if (mapId == 0) {
+			Path p;
+			for (int i = 1 ; i < Map.WIDTH - 2 ; i++) {
+				this.map[Map.HEIGHT -3][i] = new Wall();
+				p = new Path(1);
+				this.map[Map.HEIGHT -4][i] = p;
+				this.paths.add(p);
+				
+				this.map[Map.HEIGHT -5][i] = new Wall();
+			}
+			//on enleve le chemin pv 1 généré avant
+			this.paths.remove(this.map[Map.HEIGHT -4][Map.WIDTH - 7]);
+			p = new Path(1);
+			this.map[Map.HEIGHT -4][Map.WIDTH - 7] = p;
+			this.paths.add(p);
+			
+			this.paths.remove(this.map[Map.HEIGHT -4][Map.WIDTH - 6]);
+			p = new Path(1);
+			this.map[Map.HEIGHT -4][Map.WIDTH - 6] = p;
+			this.paths.add(p);
+			
+			this.paths.remove(this.map[Map.HEIGHT -4][Map.WIDTH - 4]);
+			this.map[Map.HEIGHT -4][Map.WIDTH - 4] = new PathMapEnd();
+			
+			this.paths.remove(this.map[Map.HEIGHT -4][1]);
+			this.map[Map.HEIGHT -4][1] = new Wall();
+			this.paths.remove(this.map[Map.HEIGHT -4][Map.WIDTH - 3]);
+			this.map[Map.HEIGHT -4][Map.WIDTH - 3] = new Wall();
+			
+			this.behindPlayer = this.map[Map.HEIGHT -4][2];
+			this.map[Map.HEIGHT -4][2] = this.player;
+		}
+		if (mapId == 1) {
+			System.out.println("Chargement du second tableau...");
 			Path p;
 			for (int i = 1 ; i < Map.WIDTH - 2 ; i++) {
 				this.map[Map.HEIGHT -3][i] = new Wall();
@@ -85,7 +136,16 @@ public class Map implements Model {
 			this.behindPlayer = this.map[Map.HEIGHT -4][2];
 			this.map[Map.HEIGHT -4][2] = this.player;
 		}
-	}
+		if (mapId == 2) {
+			System.out.println("Chargement du troisième tableau...");
+		}
+		if (mapId == 3) {
+			System.out.println("Chargement du quatrième tableau...");
+		}
+		if (mapId == 4) {
+			System.out.println("Chargement du cinquième tableau...");
+			}
+		}
 	
 	public boolean isMapFinised() {
 		for (Path p : this.paths) {

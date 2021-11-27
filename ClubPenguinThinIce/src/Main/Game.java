@@ -1,5 +1,7 @@
 package Main;
 
+import java.util.Scanner;
+
 import controllers.Controller;
 import controllers.impl.ControllerConsole;
 import controllers.impl.ControllerSwing;
@@ -14,10 +16,51 @@ public class Game {
 	private View view;
 	
 	public Game() {
-		this.model = new Map();
+		
+		Scanner sc = new Scanner(System.in);
+		System.out.println("Bienvenue dans Club Penguin Thin Ice \n");
+		int choix = 0;
+        System.out.println("Vous voulez : \n1 -> Jouer  \n2 -> Chargez une partie   \n3 -> Aide ? \n4 -> Quitter la partie");
+        choix = sc.nextInt();
+        while (saisieControle(choix) == false)//saisie controlé
+        {
+            System.out.println("Saisie incorrect. Veuillez choisir un chiffre entre : [1-2-3-4]");
+            System.out.println("Vous voulez : \n1 -> Jouer ? \n2 -> Chargez une partie ?  \n3 -> Aide ? \n4 -> Quitter la partie  ?");
+            choix = sc.nextInt();
+        }
+        switch (choix) {
+        case 1:
+        	play();
+            break;
+        case 2:
+        	System.out.println("Chargement de la partie...");
+            break;
+        case 3:
+        	System.out.println("Voici les règles du jeu : ");
+        	break;
+        case 4:
+        		
+        }
+	}
+	
+	public void play() {
+		int id = 0; //on stock l'id de la map
+		while (id < 5) {
+			while (playOneTime(id) == "perdue") { //si un niveau est perdue
+				id-=1; // on doit refaire le niveau
+				System.out.println("Veuillez recommencer le niveau!");
+				break;
+			}
+			id+=1;
+		}	
+	}
+	
+	public String playOneTime(int mapId) {
+		
+		this.model = new Map(mapId); //on génère la map
 		// choix entre le controlleur console ou swing
-		//this.controller = new ControllerConsole(this.model);
-		this.controller = new ControllerSwing(this.model);
+		this.controller = new ControllerConsole(this.model);
+		//this.controller = new ControllerSwing(this.model);
 		this.view = new ViewConsole(this.model, this.controller);
 		
 		long debut = System.currentTimeMillis();
@@ -41,5 +84,10 @@ public class Game {
 			status = "perdue";
 		
 		System.out.println("Partie " + status + " en " + diff + " secondes !");
+		return status;
 	}
+	
+	public static boolean saisieControle(int choix) {
+        return (choix >= 1 && choix <= 4);
+    }
 }
