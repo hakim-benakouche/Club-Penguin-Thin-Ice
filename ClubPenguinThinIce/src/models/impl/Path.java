@@ -3,7 +3,7 @@ package models.impl;
 import models.Item;
 
 public class Path implements Item {
-	// pv 0 : la glace est cassée
+	// pv 0 : la glace est cassï¿½e
 	// pv 1 : on peut marcher encore une fois sur la galce 
 	// ect
 	private int pv;
@@ -40,7 +40,7 @@ public class Path implements Item {
 
 	@Override
 	public void onEnter() {
-		// TODO Auto-generated method stub
+		//this.pv -= 1;
 		
 	}
 

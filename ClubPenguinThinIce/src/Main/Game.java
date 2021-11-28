@@ -39,18 +39,19 @@ public class Game {
         	System.out.println("Voici les règles du jeu : ");
         	break;
         case 4:
-        		
         }
 	}
 	
 	public void play() {
-		int id = 0; //on stock l'id de la map
-		while (id < 5) {
+		
+		int id = 1; //on stock l'id de la map
+		while (id < 6) {
 			while (playOneTime(id) == "perdue") { //si un niveau est perdue
 				id-=1; // on doit refaire le niveau
-				System.out.println("Veuillez recommencer le niveau!");
+				System.out.println("Veuillez recommencer le niveau !");
 				break;
 			}
+			System.out.println("Chargement du niveau :");
 			id+=1;
 		}	
 	}
@@ -67,14 +68,19 @@ public class Game {
 		
 		boolean game_finished = false;
 		while ((!game_finished || !this.model.isMapFinised()) && this.model.playerCanMove()) {
-			System.out.println("\n\n\n\n");
-			this.view.displayMap();
+			
+			System.out.println("\n\n\n");
+			this.view.displayMap(); 
+			System.out.println("\n");
+			this.view.displayScore();
 			game_finished = this.controller.playUserMove();
+
 		}
-		System.out.println("\n\n\n\n");
+		
+		System.out.println("\n\n\n");
 		// Affiche la map finale
 		this.view.displayMap();
-		
+		this.view.displayPoint(mapId);
 		long fin = System.currentTimeMillis();
 		float diff = (fin - debut) /1000.0f; 
 		
@@ -83,7 +89,7 @@ public class Game {
 		if (!this.model.isMapFinised()) 
 			status = "perdue";
 		
-		System.out.println("Partie " + status + " en " + diff + " secondes !");
+		System.out.println("Niveau " + mapId  + " " + status + " en " + diff + " secondes ! \n");
 		return status;
 	}
 	

@@ -28,5 +28,13 @@ public class ViewConsole implements View {
 			System.out.println("");
 		}
 	}
+
+	public void displayScore() {
+		System.out.println("Score : " + model.getNbPathsBreak()+ "/" + model.getNbPaths());
+	}
+	
+	public void displayPoint(int mapId) {
+		System.out.println("Points : " + model.getPoints(mapId));
+	}
 	
 }

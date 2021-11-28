@@ -11,7 +11,7 @@ import models.impl.PathMapEnd;
 public class ControllerConsole implements Controller {
 	
 	
-	private final static String MESSAGE_BEFORE_USER_INPUT = "Saisir un déplacement : zqsd ou 2468 puis entrer.";
+	private final static String MESSAGE_BEFORE_USER_INPUT = "Saisir un deplacement : zqsd ou 2468 puis entrer.";
 	private final static String ALLOWED_INPUTS = "ZQSD2486";
 	
 	private Scanner keyboard = new Scanner(System.in);

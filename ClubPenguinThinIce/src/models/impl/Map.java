@@ -31,14 +31,14 @@ public class Map implements Model {
 		
 		switch (mapId) {
 		
-		case 0 :
-			ressources+="map0.txt";
-			break;
 		case 1 :
 			ressources+="map1.txt";
 			break;
-		case 2: 
+		case 2 :
 			ressources+="map2.txt";
+			break;
+		case 3: 
+			ressources+="map3.txt";
 			break;
 		}
 		
@@ -57,8 +57,6 @@ public class Map implements Model {
 		//this.generate_map(mapId);
 	}
 	
-	
-	
 	private void generateEmptyMap() {
 		for (int i = 0 ; i < Map.HEIGHT ; i++) {
 			for (int j = 0 ; j < Map.WIDTH ; j++) {
@@ -71,40 +69,7 @@ public class Map implements Model {
 		if (mapId < 0) 
 			throw new IllegalArgumentException("Map Id NYI");
 		
-		if (mapId == 0) {
-			Path p;
-			for (int i = 1 ; i < Map.WIDTH - 2 ; i++) {
-				this.map[Map.HEIGHT -3][i] = new Wall();
-				p = new Path(1);
-				this.map[Map.HEIGHT -4][i] = p;
-				this.paths.add(p);
-				
-				this.map[Map.HEIGHT -5][i] = new Wall();
-			}
-			//on enleve le chemin pv 1 généré avant
-			this.paths.remove(this.map[Map.HEIGHT -4][Map.WIDTH - 7]);
-			p = new Path(1);
-			this.map[Map.HEIGHT -4][Map.WIDTH - 7] = p;
-			this.paths.add(p);
-			
-			this.paths.remove(this.map[Map.HEIGHT -4][Map.WIDTH - 6]);
-			p = new Path(1);
-			this.map[Map.HEIGHT -4][Map.WIDTH - 6] = p;
-			this.paths.add(p);
-			
-			this.paths.remove(this.map[Map.HEIGHT -4][Map.WIDTH - 4]);
-			this.map[Map.HEIGHT -4][Map.WIDTH - 4] = new PathMapEnd();
-			
-			this.paths.remove(this.map[Map.HEIGHT -4][1]);
-			this.map[Map.HEIGHT -4][1] = new Wall();
-			this.paths.remove(this.map[Map.HEIGHT -4][Map.WIDTH - 3]);
-			this.map[Map.HEIGHT -4][Map.WIDTH - 3] = new Wall();
-			
-			this.behindPlayer = this.map[Map.HEIGHT -4][2];
-			this.map[Map.HEIGHT -4][2] = this.player;
-		}
 		if (mapId == 1) {
-			System.out.println("Chargement du second tableau...");
 			Path p;
 			for (int i = 1 ; i < Map.WIDTH - 2 ; i++) {
 				this.map[Map.HEIGHT -3][i] = new Wall();
@@ -116,12 +81,12 @@ public class Map implements Model {
 			}
 			//on enleve le chemin pv 1 généré avant
 			this.paths.remove(this.map[Map.HEIGHT -4][Map.WIDTH - 7]);
-			p = new Path(2);
+			p = new Path(1);
 			this.map[Map.HEIGHT -4][Map.WIDTH - 7] = p;
 			this.paths.add(p);
 			
 			this.paths.remove(this.map[Map.HEIGHT -4][Map.WIDTH - 6]);
-			p = new Path(2);
+			p = new Path(1);
 			this.map[Map.HEIGHT -4][Map.WIDTH - 6] = p;
 			this.paths.add(p);
 			
@@ -145,7 +110,7 @@ public class Map implements Model {
 		if (mapId == 4) {
 			System.out.println("Chargement du cinquième tableau...");
 			}
-		}
+	}
 	
 	public boolean isMapFinised() {
 		for (Path p : this.paths) {
@@ -170,8 +135,30 @@ public class Map implements Model {
 	public Player getPlayer() {
 		return this.player;
 	}
-
-
+	
+	public int getNbPaths() {
+		return this.paths.size();	
+	}
+	
+	public int getNbPathsBreak() {
+		int occ = 1;
+		for (Path p : this.paths) {
+			if (p.getChar() == 'O')
+				occ+=1;
+		}
+		return occ;
+	}
+	
+	public int getPoints(int mapId) {
+		int paths = getNbPathsBreak();
+		if (isMapFinised()) {
+			if (mapId == 1) {
+				return paths + 20;
+			}
+			return getPoints(mapId-1) + paths +20; 
+		}
+		return paths;
+	}
 
 	@Override
 	public Item getItem(int posLine, int posColumn) {
@@ -181,8 +168,6 @@ public class Map implements Model {
 		}
 		return this.map[posLine][posColumn];
 	}
-
-
 
 	@Override
 	public Item getItem(DIRECTION direction) {
@@ -197,8 +182,6 @@ public class Map implements Model {
 		}
 		return null;
 	}
-
-
 
 	@Override
 	public void movePlayer(DIRECTION direction) {
@@ -231,14 +214,6 @@ public class Map implements Model {
 		// on ajoute le joueur sur la map (avec sa nouvelle pos)
 		this.map[this.player.getPosLine()][this.player.getPosColumn()] = this.player;
 	}
+
+
 }
-
-
-
-
-
-
-
-
-
-

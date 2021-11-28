@@ -6,8 +6,14 @@ public interface Model {
 	public Item[][] getMap();
 	public Item getItem(int posLine, int posColumn);
 	public Item getItem(DIRECTION direction);
+	public int getNbPaths();
+	public int getNbPathsBreak();
+	public int getPoints(int i);
 	public void movePlayer(DIRECTION direction);
 	public Player getPlayer();
 	public boolean playerCanMove();
 	public boolean isMapFinised();
+
+
+	
 }
