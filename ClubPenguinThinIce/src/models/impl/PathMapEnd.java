@@ -2,13 +2,12 @@ package models.impl;
 
 public class PathMapEnd extends Path {
 
-	public PathMapEnd() {
-		super(1);
+	public PathMapEnd(int x, int y) {
+		super(1, x, y);
 	}
 	
 	@Override
 	public char getChar() {
 		return 'W';
 	}
-
 }

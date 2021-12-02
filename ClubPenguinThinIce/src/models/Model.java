@@ -1,9 +1,11 @@
 package models;
 
+import java.util.ArrayList;
+
 import models.impl.Map.DIRECTION;
 
 public interface Model {
-	public Item[][] getMap();
+	public ArrayList<Item> getMap();
 	public Item getItem(int posLine, int posColumn);
 	public Item getItem(DIRECTION direction);
 	public int getNbPaths();
@@ -12,7 +14,7 @@ public interface Model {
 	public void movePlayer(DIRECTION direction);
 	public Player getPlayer();
 	public boolean playerCanMove();
-	public boolean isMapFinised();
+	public boolean isMapCompleted();
 
 
 	

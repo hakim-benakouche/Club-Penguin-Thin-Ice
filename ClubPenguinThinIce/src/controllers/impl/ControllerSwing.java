@@ -141,4 +141,10 @@ public class ControllerSwing extends JFrame implements Controller {
 		this.lastDirection = null;
 		return item instanceof PathMapEnd;
 	}
+
+	@Override
+	public void destroy() {
+		super.setVisible(false); //you can't see me!
+	    super.dispose(); //Destroy the JFrame object
+	}
 }

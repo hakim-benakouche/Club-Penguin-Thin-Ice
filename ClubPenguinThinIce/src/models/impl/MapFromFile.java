@@ -12,7 +12,7 @@ import models.Player;
 public class MapFromFile {
 	
 	@SuppressWarnings("resource")
-	public static Player generateMapFromFile(Item map[][], URI filePath, ArrayList<Path> paths) {
+	public static Player generateMapFromFile(ArrayList<Item> items, URI filePath) {
 		//= new Item[Map.HEIGHT][Map.WIDTH]; 
 		
 		File file = new File(filePath);
@@ -37,7 +37,7 @@ public class MapFromFile {
 				throw new IllegalArgumentException("Le fichier ne respecte pas le format attendu (pas assez/trop de colonnes)");
 			
 			
-			Player tmp_player = MapFromFile.addLine(map, i, currentLine, paths);
+			Player tmp_player = MapFromFile.addLine(items, i, currentLine);
 			if (tmp_player != null)
 				p = tmp_player;
 		}
@@ -48,29 +48,31 @@ public class MapFromFile {
 		return p;
 	}
 	
-	private static Player addLine(Item[][] map, int line, String string, ArrayList<Path> paths) {
-		Item toAdd;
+	private static Player addLine(ArrayList<Item> items, int line, String string) {
+		Item toAdd = null;
 		Player p = null;
 		
 		char c;
 		for (int j = 0 ; j < Map.WIDTH ; j++) {
 			c = string.charAt(j);
 			if (c >= '1' && c <= '9') {
-				toAdd = new Path(Character.getNumericValue(c));
-				paths.add((Path) toAdd);
+				toAdd = new Path(Character.getNumericValue(c), line, j);
 			} else if (c == '#')
-				toAdd = new Wall();
+				toAdd = new Wall(line, j);
 			else if (c == '.')
-				toAdd = new Empty();
+				toAdd = new Empty(line, j);
 			else if (c == 'P') {
-				toAdd = new Penguin(line, j);
-				p = (Player) toAdd;
+				p = new Penguin(line, j);
+				toAdd = new Path(1, line, j);
 			} else if (c == 'W')
-				toAdd = new PathMapEnd();
+				toAdd = new PathMapEnd(line, j);
+			else if (c == 'M')
+				toAdd = new Mower(line, j);
 			else
-				throw new IllegalArgumentException("Le fichier ne respecte pas le format attendu (caractère non reconnu)");
-		
-			map[line][j] = toAdd;
+				throw new IllegalArgumentException("Le fichier ne respecte pas le format attendu (caractï¿½re non reconnu)");
+			
+			if (toAdd != null)
+				items.add(toAdd);
 		}
 		
 		return p;

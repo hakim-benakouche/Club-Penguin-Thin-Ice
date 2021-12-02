@@ -36,7 +36,7 @@ public class Game {
         	System.out.println("Chargement de la partie...");
             break;
         case 3:
-        	System.out.println("Voici les règles du jeu : ");
+        	System.out.println("Voici les regles du jeu : ");
         	break;
         case 4:
         }
@@ -60,35 +60,38 @@ public class Game {
 		
 		this.model = new Map(mapId); //on génère la map
 		// choix entre le controlleur console ou swing
-		this.controller = new ControllerConsole(this.model);
-		//this.controller = new ControllerSwing(this.model);
+		//this.controller = new ControllerConsole(this.model);
+		this.controller = new ControllerSwing(this.model);
 		this.view = new ViewConsole(this.model, this.controller);
 		
 		long debut = System.currentTimeMillis();
 		
 		boolean game_finished = false;
-		while ((!game_finished || !this.model.isMapFinised()) && this.model.playerCanMove()) {
+		while ((!game_finished || !this.model.isMapCompleted()) && this.model.playerCanMove()) {
 			
 			System.out.println("\n\n\n");
 			this.view.displayMap(); 
 			System.out.println("\n");
 			this.view.displayScore();
 			game_finished = this.controller.playUserMove();
-
 		}
 		
 		System.out.println("\n\n\n");
 		// Affiche la map finale
 		this.view.displayMap();
-		this.view.displayPoint(mapId);
 		long fin = System.currentTimeMillis();
 		float diff = (fin - debut) /1000.0f; 
 		
 		// affiche si partie gagnée ou perdue
-		String status = "gagnée";
-		if (!this.model.isMapFinised()) 
+		String status = "gagn�e";
+		if (!this.model.isMapCompleted()){
 			status = "perdue";
+			this.view.displayPoint(mapId-1); //on affiche le score précédent
+		} else {
+			this.view.displayPoint(mapId);
+		}
 		
+		this.controller.destroy();
 		System.out.println("Niveau " + mapId  + " " + status + " en " + diff + " secondes ! \n");
 		return status;
 	}

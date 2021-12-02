@@ -1,9 +1,12 @@
 package views.impl;
 
+import java.util.ArrayList;
+
 import controllers.Controller;
 import models.Item;
 import models.Model;
 import models.Player;
+import models.impl.Empty;
 import models.impl.Map;
 import views.View;
 
@@ -18,12 +21,29 @@ public class ViewConsole implements View {
 	
 	@Override
 	public void displayMap() {
-		Item[][] map = this.model.getMap();
-
+		Empty e = new Empty(-1, -1);
+		char[][] mapChar = new char[Map.HEIGHT][Map.WIDTH];
+		
+		ArrayList<Item> map = this.model.getMap();
+		
 		
 		for (int i = 0 ; i < Map.HEIGHT ; i++) {
 			for (int j = 0 ; j < Map.WIDTH ; j++) {
-				System.out.print(map[i][j].getChar());
+				mapChar[i][j] = e.getChar(); 
+			}
+		}
+		
+		// ajout des items 1 a 1
+		for (Item i : map) {
+			mapChar[i.getX()][i.getY()] = i.getChar(); 
+		}
+		// ajout du joueura la toute fin
+		Player p = this.model.getPlayer();
+		mapChar[p.getX()][p.getY()] = p.getChar();
+		
+		for (int i = 0 ; i < Map.HEIGHT ; i++) {
+			for (int j = 0 ; j < Map.WIDTH ; j++) {
+				System.out.print(mapChar[i][j]);
 			}
 			System.out.println("");
 		}
