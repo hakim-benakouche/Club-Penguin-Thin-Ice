@@ -14,7 +14,7 @@ import controllers.Controller;
 import models.Item;
 import models.Model;
 import models.impl.Map.DIRECTION;
-import models.impl.PathMapEnd;
+import models.impl.items.PathMapEnd;
 
 public class ControllerSwing extends JFrame implements Controller {
 	
@@ -137,6 +137,8 @@ public class ControllerSwing extends JFrame implements Controller {
 		Item item = this.model.getItem(this.lastDirection);
 		if (item.isReacheable()) {
 			this.model.movePlayer(this.lastDirection);
+		} else {
+			item.onPush(this.lastDirection);
 		}
 		this.lastDirection = null;
 		return item instanceof PathMapEnd;
@@ -145,6 +147,6 @@ public class ControllerSwing extends JFrame implements Controller {
 	@Override
 	public void destroy() {
 		super.setVisible(false); //you can't see me!
-	    super.dispose(); //Destroy the JFrame object
+		super.dispose(); //Destroy the JFrame object
 	}
 }

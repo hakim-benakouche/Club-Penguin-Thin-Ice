@@ -6,8 +6,8 @@ import controllers.Controller;
 import models.Item;
 import models.Model;
 import models.Player;
-import models.impl.Empty;
 import models.impl.Map;
+import models.impl.items.Empty;
 import views.View;
 
 public class ViewConsole implements View {
@@ -19,13 +19,22 @@ public class ViewConsole implements View {
 		this.controller = controller;
 	}
 	
+	/**
+	 * On récupère tous les items contenus dans le modele, 
+	 * ensuite on les tris dans l'ordre de priorité. Pour chaque item : on affiche son
+	 * caractère (getChar) dans le tableau.
+	 * 
+	 * Une fois tous les items affichés, on affiche le joueur (le plus prioritaire).
+	 */
 	@Override
 	public void displayMap() {
 		Empty e = new Empty(-1, -1);
 		char[][] mapChar = new char[Map.HEIGHT][Map.WIDTH];
 		
 		ArrayList<Item> map = this.model.getMap();
-		
+		map.sort((o1, o2)
+                -> String.valueOf(o1.getPriority()).compareTo(
+                		String.valueOf(o2.getPriority())));
 		
 		for (int i = 0 ; i < Map.HEIGHT ; i++) {
 			for (int j = 0 ; j < Map.WIDTH ; j++) {
@@ -49,12 +58,12 @@ public class ViewConsole implements View {
 		}
 	}
 
-	public void displayScore() {
-		System.out.println("Score : " + model.getNbPathsBreak()+ "/" + model.getNbPaths());
+	public void displayCurrentMapScore() {
+		System.out.println("Briques cassées : " + model.getNbPathsBreak()+ "/" + model.getNbPaths());
 	}
 	
-	public void displayPoint(int mapId) {
-		System.out.println("Points : " + model.getPoints(mapId));
+	public void displayTotalPoint(int totalPoint) {
+		System.out.println("Total points : " + totalPoint);
 	}
 	
 }

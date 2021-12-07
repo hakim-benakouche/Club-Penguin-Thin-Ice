@@ -1,14 +1,40 @@
 package models;
 
-import models.impl.Map.DIRECTION;
-
-public interface Player extends Item {
-//	public int getPosLine();
-//	public int getPosColumn();
-//	public void setPosLine(int newPosLine);
-//	public void setPosColumn(int newPosColumn);
-//	public void addPosLine(int offsetPosLine);
-//	public void addPosColumn(int offsetPosColumn);
+public interface Player extends Movable {
+	/**
+	 * Enumeration contenant les divers effets de potions
+	 *
+	 */
+	public enum EFFECTS {
+		LIGHTNESS
+	}
 	
-	public void move(DIRECTION d);
+	/**
+	 * Permet d'obtenir l'effet du joueur (utilisé par les PATH pour savoir 
+	 * s'ils doivent perdre un PV ou non).
+	 * @return l'Effet que le joueur possède (peut être null)
+	 */
+	public EFFECTS getEffect();
+	
+	/**
+	 * Permet de donner un effet au joueur en donnant une durée.
+	 * @param effect affecté au joueur.
+	 * @param effectDuration nombre de déplacements que le joueur poura faire en 
+	 * conservant l'effet.
+	 */
+	public void setEffect(EFFECTS effect, int effectDuration);
+	
+	/**
+	 * Permet de savoir si le joueur est en vie ou non (pour l'évènement de fin de partie).
+	 * @return TRUE si le joueur est en vie, FALSE sinon.
+	 */
+	public boolean isAlive();
+	
+	/**
+	 * Permet de modifier le statut du joueur. Utilisé par un ennemi pour tuer le joueur
+	 * s'il est à côté de lui.
+	 * @param isAlive nouveau statut du joueur.
+	 */
+	public void setAlive(boolean isAlive);
 }
+

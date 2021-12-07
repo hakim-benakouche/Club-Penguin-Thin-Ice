@@ -6,18 +6,13 @@ import controllers.Controller;
 import models.Item;
 import models.Model;
 import models.impl.Map.DIRECTION;
-import models.impl.PathMapEnd;
+import models.impl.items.PathMapEnd;
 
 public class ControllerConsole implements Controller {
-	
-	
 	private final static String MESSAGE_BEFORE_USER_INPUT = "Saisir un deplacement : zqsd ou 2468 puis entrer.";
 	private final static String ALLOWED_INPUTS = "ZQSD2486";
-	
 	private Scanner keyboard = new Scanner(System.in);
-	
 	private Model model;
-	
 	
 	public ControllerConsole(Model model) {
 		this.model = model;
@@ -28,13 +23,11 @@ public class ControllerConsole implements Controller {
 		System.out.println(ControllerConsole.MESSAGE_BEFORE_USER_INPUT);
 		String input = keyboard.nextLine().toUpperCase();
 		
-		
         while (input.length() != 1 || ! ALLOWED_INPUTS.contains(input)) {
         	System.out.print("\nSaisie invalide. >> ");
         	input = keyboard.nextLine().toUpperCase();
         }
 		
-        
         if ("Z8".contains(input)) {
         	return DIRECTION.UP;
         } else if ("Q4".contains(input)) {
@@ -53,6 +46,8 @@ public class ControllerConsole implements Controller {
 		Item item = this.model.getItem(direction);
 		if (item.isReacheable()) {
 			this.model.movePlayer(direction);
+		} else {
+			item.onPush(direction);
 		}
 		
 		return item instanceof PathMapEnd;
@@ -60,8 +55,5 @@ public class ControllerConsole implements Controller {
 
 	@Override
 	public void destroy() {
-		// TODO Auto-generated method stub
-		
 	}
-	
 }

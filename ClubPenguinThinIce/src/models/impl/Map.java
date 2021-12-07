@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import models.Item;
 import models.Model;
 import models.Player;
+import models.impl.items.Ennemy;
+import models.impl.items.Path;
+import models.impl.items.PathMapEnd;
 
 public class Map implements Model {
 	public enum DIRECTION {
@@ -17,57 +20,57 @@ public class Map implements Model {
 	
 	//private Item[][] map;
 	private ArrayList<Item> items;
+	private ArrayList<Ennemy> ennemies;
 	private Player player; 
+	private int mapId;
+	private int normalTimeToComplete;
 	
-	
+	/**
+	 * Utilise la classe statique MapFromFile pour générer la map à partir d'un fichier
+	 * texte.
+	 * @param mapId de la map que l'on souhaite charger.
+	 */
 	public Map(int mapId) {
-		//					ligne		colonne
-		//this.map = new Item[Map.HEIGHT][Map.WIDTH]; 
 		this.items = new ArrayList<Item>();
+		this.ennemies = new ArrayList<Ennemy>();
+		this.mapId = mapId;
 		
-		String ressources = "/ressources/";
+		if (mapId < 0 || mapId > 6)
+			throw new IllegalArgumentException("La map demandée n'existe pas");
 		
-		switch (mapId) {
-		
-		case 1 :
-			ressources+="map1.txt";
-			break;
-		case 2 :
-			ressources+="map2.txt";
-			break;
-		case 3: 
-			ressources+="map3.txt";
-			break;
-		case 4:
-			ressources+="map4.txt";
-		}
+		String ressources = "/ressources/maps/map" + mapId + ".txt";
 		
 		try {
-			this.player = MapFromFile.generateMapFromFile(this.items, 
+			this.player = MapFromFile.generateMapFromFile(this, this.items, this.ennemies,
 					this.getClass().getResource(ressources).toURI());
 			
+			this.normalTimeToComplete =  MapFromFile.getTimeToComplete(this.getClass().getResource(ressources).toURI());
+					
+			this.items.add(this.player);
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 			System.exit(0);
 		}
-		
-		
-		//this.generateEmptyMap();
-		//this.generate_map(mapId);
 	}
 	
+	/**
+	 * On regarde retourne FALSE si l'un des chemin a encore de la vie. TRUE sinon
+	 */
 	public boolean isMapCompleted() {
 		for (Item p : this.items) {
 			if (p instanceof Path && ((Path) p).getPV() > 0 && ! (p instanceof PathMapEnd))
 				return false;
-			
 		}
 		return true;
 	}
 	
+	/**
+	 * On regarde si l'un des items dans les 4 directions et "reacheable" ou "pushable".
+	 */
 	public boolean playerCanMove() {
+		if (!this.player.isAlive()) return false;
 		for (DIRECTION d : DIRECTION.values()) {
-			if (this.getItem(d).isReacheable())
+			if (this.getItem(d) != null && (this.getItem(d).isReacheable() || this.getItem(d).isPushable()))
 				return true;
 		}
 		return false;
@@ -81,6 +84,16 @@ public class Map implements Model {
 		return this.player;
 	}
 	
+	public void killPlayer() {
+		this.items.remove(this.player);
+		this.player = null;
+	}
+	
+	/**
+	 * Compte le nombre de chemins en inclus dans les items de la map
+	 * excluant le chemin de fin (PathMapEnd).
+	 */
+	@Override
 	public int getNbPaths() {
 		int i = 0;
 		for (Item p : this.items) {
@@ -92,6 +105,11 @@ public class Map implements Model {
 		return i;	
 	}
 	
+	/**
+	 * Compte le nombre de chemins en inclus dans les items de la map 
+	 * ayant plus de vie et excluant le chemin de fin (PathMapEnd).
+	 */
+	@Override
 	public int getNbPathsBreak() {
 		int i = 0;
 		for (Item p : this.items) {
@@ -101,32 +119,47 @@ public class Map implements Model {
 		return i;
 	}
 	
-	public int getPoints(int mapId) {
-			switch (mapId) {
-			case 1 :
-				return 14 + 10; //24
-			case 2 :
-				return getPoints(mapId-1) + 26 + 20; //70
-			case 3 : 
-				return getPoints(mapId-1) + 24 + 30; //122
-			}
-		return 0;
+	@Override
+	public int getPoints(int timeToComplete) {
+		return this.getNbPathsBreak() +10 * this.mapId + 
+			(this.normalTimeToComplete - timeToComplete);
 	}
-
+	
 	@Override
 	public Item getItem(int posLine, int posColumn) {
+		return this.getItem(posLine, posColumn, false);
+	}
+	
+	@Override
+	public Item getItem(int posLine, int posColumn, boolean excludePlayer) {
 		if (posLine < 0 || posColumn < 0 ||  
 				posLine >= Map.HEIGHT || posColumn >= Map.WIDTH ) {
 			return null;
 		}
-		
+		Item m = null;		
 		for (Item p : this.items) {
-			if (p.getX() == posLine && p.getY() == posColumn)
-				return p;
+			if (p.getX() == posLine && p.getY() == posColumn && 
+					(!(p instanceof Player)) &&
+					(m == null || p.getPriority() > m.getPriority()) )
+				m = p;
+		}
+		return m;
+	}
+	
+	@Override
+	public Item getItem(Item item, DIRECTION direction) {
+		if (direction == DIRECTION.UP) {
+			return this.getItem(item.getX() - 1, item.getY());
+		} else if (direction == DIRECTION.LEFT) {
+			return this.getItem(item.getX(), item.getY() - 1);
+		} else if (direction == DIRECTION.DOWN) {
+			return this.getItem(item.getX() + 1, item.getY());
+		} else if (direction == DIRECTION.RIGHT) {
+			return this.getItem(item.getX(), item.getY() + 1);
 		}
 		return null;
 	}
-
+	
 	//retourne l'item a cote du joueur dans la direction 'direction'
 	@Override
 	public Item getItem(DIRECTION direction) {
@@ -142,21 +175,49 @@ public class Map implements Model {
 		return null;
 	}
 	
-
+	public ArrayList<Item> getItemsAround(Item i) {
+		ArrayList<Item> items = new ArrayList<Item>();
+		for (DIRECTION d : DIRECTION.values()) {
+			Item current = this.getItem(i, d);
+			if (current != null) 
+				items.add(current);
+		}
+		return items;
+	}
+	
 	@Override
+	public void removeItem(Item item) {
+		this.items.remove(item);
+	}
+	
+	@Override
+	/**
+	 * Avant chaque mouvement du joueur : notifier l'Item avec la méthode "onLeave",
+	 * Après chaque mouvement du joueur : notifier l'Item avec la méthode "onEnter",
+	 * Une fois l'action du joueur terminée : déplacement des ennemis.
+	 */
 	public void movePlayer(DIRECTION direction) {
 		
 		// notifier l'item sous le joueur qu'il le quitte
 		int playerX = this.player.getX();
 		int playerY = this.player.getY();
-		this.getItem(playerX, playerY).onLeave();
 		
-		// on dï¿½place le joueur dans la direction
+		this.getItem(playerX, playerY, true).onLeave(this.player);
+		
+		// on déplace le joueur dans la direction
 		this.player.move(direction);
 		
-		//on rï¿½cupere l'item sous les pieds du joueur et on le notifier
-		this.getItem(this.player.getX(), this.player.getY()).onEnter();
+		//on récupere l'item sous les pieds du joueur et on le notifier
+		this.getItem(this.player.getX(), this.player.getY()).onEnter(this.player);
 		
+		// on déplace les mobs 
+		this.moveEnnemies();
+	}
+	
+	public void moveEnnemies() {
+		for (Ennemy e : this.ennemies) {
+			e.moveDefault();
+		}
 	}
 
 
